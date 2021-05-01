@@ -1,0 +1,43 @@
+version: "3.4"
+
+services:
+  project-db:
+    image: postgres:12-alpine
+    container_name: project-db
+    restart: always
+    volumes:
+      - project-postgres-data:/var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+  project-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: project-app
+    command: bash gunicorn.sh
+    environment:
+      WAIT_HOSTS: project-db
+    env_file:
+      - .env
+    volumes:
+      - .:/home/app/
+      - ./static/:/home/app/static/
+      - ./media/:/home/app/media/:rw
+    ports:
+      - 8000:8000
+    tty: true
+    restart: on-failure
+    depends_on:
+      - project-db
+
+volumes:
+  project-postgres-data:
+
+networks:
+  default:
+    name: project-network

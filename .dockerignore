@@ -1,0 +1,8 @@
+.git
+local_settings.py
+*.log
+*.pyc
+.idea
+README.md
+kubernetes
+temp
