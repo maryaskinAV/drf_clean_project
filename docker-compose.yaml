@@ -1,4 +1,4 @@
-version: "3.4"
+version: "3.7"
 
 services:
   project-db:
@@ -8,7 +8,7 @@ services:
     volumes:
       - project-postgres-data:/var/lib/postgresql/data/pgdata
     ports:
-      - 5432:5432
+      - "5432:5432"
     env_file:
       - .env
     environment:
@@ -17,7 +17,7 @@ services:
   project-app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: configs/web/Dockerfile
     container_name: project-app
     command: bash gunicorn.sh
     environment:
@@ -25,11 +25,11 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/home/app/
-      - ./static/:/home/app/static/
-      - ./media/:/home/app/media/:rw
+      - ./src/.:/home/app/project
+      - ./src/static/:/home/app/static/
+      - ./src/media/:/home/app/media/:rw
     ports:
-      - 8000:8000
+      - "8000:8000"
     tty: true
     restart: on-failure
     depends_on:
@@ -39,5 +39,6 @@ volumes:
   project-postgres-data:
 
 networks:
-  default:
-    name: project-network
+  project-network:
+    external: false
+
